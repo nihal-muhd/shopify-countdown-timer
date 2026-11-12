@@ -10,6 +10,7 @@
     "info": "shopify app info",
     "generate": "shopify app generate",
     "deploy": "shopify app deploy",
+    "test": "npm test --workspace shopify-app-template-node",
     "build:widget": "npm run build --workspace countdown-widget",
     "watch:widget": "npm run watch --workspace countdown-widget"
   },
