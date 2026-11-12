@@ -32,8 +32,8 @@ const TYPE_CHOICES = [
 ];
 
 const POSITION_OPTIONS = [
-  { label: "Above the product details", value: "top" },
-  { label: "Below the product details", value: "bottom" },
+  { label: "Headline above the countdown", value: "top" },
+  { label: "Headline below the countdown", value: "bottom" },
 ];
 
 function padTwoDigits(value) {
@@ -191,9 +191,17 @@ function TimerPreview({ values }) {
         textAlign: "center",
       }}
     >
-      <div style={{ fontSize: 14 }}>{values.headline.trim() || "Headline"}</div>
-      <div style={{ fontSize: 24, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>
-        {isEvergreen ? "00 : 29 : 59" : "02 : 14 : 37 : 59"}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: values.position === "bottom" ? "column-reverse" : "column",
+          gap: 4,
+        }}
+      >
+        <div style={{ fontSize: 14, fontWeight: 600 }}>{values.headline.trim() || "Headline"}</div>
+        <div style={{ fontSize: 24, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>
+          {isEvergreen ? "00 : 29 : 59" : "02 : 14 : 37 : 59"}
+        </div>
       </div>
     </div>
   );

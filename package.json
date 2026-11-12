@@ -9,7 +9,9 @@
     "dev": "shopify app dev",
     "info": "shopify app info",
     "generate": "shopify app generate",
-    "deploy": "shopify app deploy"
+    "deploy": "shopify app deploy",
+    "build:widget": "npm run build --workspace countdown-widget",
+    "watch:widget": "npm run watch --workspace countdown-widget"
   },
   "dependencies": {},
   "author": "NIHAL MUHAMMED",
@@ -17,6 +19,7 @@
   "workspaces": [
     "extensions/*",
     "web",
-    "web/frontend"
+    "web/frontend",
+    "widget"
   ]
 }

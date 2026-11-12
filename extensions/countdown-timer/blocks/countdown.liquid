@@ -1,0 +1,23 @@
+{%- if product -%}
+  {%- assign countdown_proxy_base = routes.root_url | append: '/apps/countdown' | replace: '//', '/' -%}
+  <div
+    class="countdown-timer-root"
+    data-countdown-timer
+    data-product-id="{{ product.id }}"
+    data-collection-ids="{{ product.collections | map: 'id' | join: ',' }}"
+    data-proxy-base="{{ countdown_proxy_base }}"
+    style="min-height: 84px; margin: 12px 0;"
+  ></div>
+  <script src="{{ 'countdown.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Countdown timer",
+  "target": "section",
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": []
+}
+{% endschema %}
