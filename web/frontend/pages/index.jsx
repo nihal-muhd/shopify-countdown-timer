@@ -1,93 +1,121 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
+  Banner,
   Card,
-  Page,
+  EmptyState,
   Layout,
-  TextContainer,
-  Image,
-  Stack,
-  Link,
+  Modal,
+  Page,
+  SkeletonBodyText,
   Text,
 } from "@shopify/polaris";
-import { TitleBar } from "@shopify/app-bridge-react";
-import { useTranslation, Trans } from "react-i18next";
+import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
+import { TimerTable } from "../components";
+import { useDeleteTimer, useTimers } from "../utils/timersApi";
 
-import { trophyImage } from "../assets";
+const EMPTY_STATE_IMAGE =
+  "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png";
 
-import { ProductsCard } from "../components";
+export default function TimersDashboard() {
+  const navigate = useNavigate();
+  const shopify = useAppBridge();
+  const { data: timers = [], isLoading, isError, refetch } = useTimers();
+  const deleteTimer = useDeleteTimer();
+  const [timerToDelete, setTimerToDelete] = useState(null);
 
-export default function HomePage() {
-  const { t } = useTranslation();
+  const goToCreatePage = () => navigate("/timers/new");
+  const goToEditPage = (timerId) => navigate(`/timers/${timerId}`);
+  const closeDeleteModal = () => setTimerToDelete(null);
+
+  async function confirmDelete() {
+    try {
+      await deleteTimer.mutateAsync(timerToDelete.id);
+      shopify.toast.show("Timer deleted");
+    } catch (error) {
+      shopify.toast.show(error.message, { isError: true });
+    } finally {
+      closeDeleteModal();
+    }
+  }
+
+  function renderTimers() {
+    if (isLoading) {
+      return (
+        <Card sectioned>
+          <SkeletonBodyText lines={6} />
+        </Card>
+      );
+    }
+
+    if (timers.length === 0) {
+      return (
+        <Card sectioned>
+          <EmptyState
+            heading="Create your first countdown timer"
+            action={{ content: "Create timer", onAction: goToCreatePage }}
+            image={EMPTY_STATE_IMAGE}
+          >
+            <p>
+              Add urgency to your promotions with a fixed sale countdown or an
+              evergreen timer that starts for each visitor.
+            </p>
+          </EmptyState>
+        </Card>
+      );
+    }
+
+    return (
+      <Card>
+        <TimerTable
+          timers={timers}
+          onEdit={goToEditPage}
+          onDelete={setTimerToDelete}
+        />
+      </Card>
+    );
+  }
+
   return (
-    <Page narrowWidth>
-      <TitleBar title={t("HomePage.title")} />
+    <Page fullWidth>
+      <TitleBar title="Countdown timers">
+        <button variant="primary" onClick={goToCreatePage}>
+          Create timer
+        </button>
+      </TitleBar>
+
       <Layout>
-        <Layout.Section>
-          <Card sectioned>
-            <Stack
-              wrap={false}
-              spacing="extraTight"
-              distribution="trailing"
-              alignment="center"
-            >
-              <Stack.Item fill>
-                <TextContainer spacing="loose">
-                  <Text as="h2" variant="headingMd">
-                    {t("HomePage.heading")}
-                  </Text>
-                  <p>
-                    <Trans
-                      i18nKey="HomePage.yourAppIsReadyToExplore"
-                      components={{
-                        PolarisLink: (
-                          <Link url="https://polaris.shopify.com/" external />
-                        ),
-                        AdminApiLink: (
-                          <Link
-                            url="https://shopify.dev/api/admin-graphql"
-                            external
-                          />
-                        ),
-                        AppBridgeLink: (
-                          <Link
-                            url="https://shopify.dev/apps/tools/app-bridge"
-                            external
-                          />
-                        ),
-                      }}
-                    />
-                  </p>
-                  <p>{t("HomePage.startPopulatingYourApp")}</p>
-                  <p>
-                    <Trans
-                      i18nKey="HomePage.learnMore"
-                      components={{
-                        ShopifyTutorialLink: (
-                          <Link
-                            url="https://shopify.dev/apps/getting-started/add-functionality"
-                            external
-                          />
-                        ),
-                      }}
-                    />
-                  </p>
-                </TextContainer>
-              </Stack.Item>
-              <Stack.Item>
-                <div style={{ padding: "0 20px" }}>
-                  <Image
-                    source={trophyImage}
-                    alt={t("HomePage.trophyAltText")}
-                    width={120}
-                  />
-                </div>
-              </Stack.Item>
-            </Stack>
-          </Card>
-        </Layout.Section>
-        <Layout.Section>
-          <ProductsCard />
-        </Layout.Section>
+        {isError ? (
+          <Layout.Section>
+            <Banner
+              title="Timers could not be loaded"
+              status="critical"
+              action={{ content: "Try again", onAction: refetch }}
+            />
+          </Layout.Section>
+        ) : null}
+        <Layout.Section>{renderTimers()}</Layout.Section>
       </Layout>
+
+      <Modal
+        open={Boolean(timerToDelete)}
+        title="Delete timer?"
+        onClose={closeDeleteModal}
+        primaryAction={{
+          content: "Delete",
+          destructive: true,
+          loading: deleteTimer.isLoading,
+          onAction: confirmDelete,
+        }}
+        secondaryActions={[{ content: "Cancel", onAction: closeDeleteModal }]}
+      >
+        <Modal.Section>
+          <Text as="p">
+            “{timerToDelete?.title}” will stop showing on your storefront. This
+            can’t be undone.
+          </Text>
+        </Modal.Section>
+      </Modal>
     </Page>
   );
 }

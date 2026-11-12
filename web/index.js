@@ -8,7 +8,6 @@ import shopify from "./shopify.js";
 import timersRouter from "./routes/timers.routes.js";
 import proxyRouter from "./routes/proxy.routes.js";
 import { routeNotFound, errorHandler } from "./middleware/errorHandler.js";
-import productCreator from "./product-creator.js";
 import PrivacyWebhookHandlers from "./privacy.js";
 
 const PORT = parseInt(
@@ -43,37 +42,6 @@ app.use("/api/*", shopify.validateAuthenticatedSession());
 app.use(express.json());
 
 app.use("/api/timers", timersRouter);
-
-app.get("/api/products/count", async (_req, res) => {
-  const client = new shopify.api.clients.Graphql({
-    session: res.locals.shopify.session,
-  });
-
-  const countData = await client.request(`
-    query shopifyProductCount {
-      productsCount {
-        count
-      }
-    }
-  `);
-
-  res.status(200).send({ count: countData.data.productsCount.count });
-});
-
-app.post("/api/products", async (_req, res) => {
-  let status = 200;
-  let error = null;
-
-  try {
-    await productCreator(res.locals.shopify.session);
-  } catch (e) {
-    console.log(`Failed to process products/create: ${e.message}`);
-    status = 500;
-    error = e.message;
-  }
-  res.status(status).send({ success: status === 200, error });
-});
-
 app.use("/api", routeNotFound);
 app.use("/api", errorHandler);
 
