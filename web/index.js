@@ -5,6 +5,11 @@ import serveStatic from "serve-static";
 
 import { connectToDatabase } from "./db.js";
 import shopify from "./shopify.js";
+import timersRouter from "./routes/timers.routes.js";
+import {
+  apiRouteNotFound,
+  errorHandler,
+} from "./middleware/errorHandler.js";
 import productCreator from "./product-creator.js";
 import PrivacyWebhookHandlers from "./privacy.js";
 
@@ -35,6 +40,8 @@ app.use("/api/*", shopify.validateAuthenticatedSession());
 
 app.use(express.json());
 
+app.use("/api/timers", timersRouter);
+
 app.get("/api/products/count", async (_req, res) => {
   const client = new shopify.api.clients.Graphql({
     session: res.locals.shopify.session,
@@ -64,6 +71,9 @@ app.post("/api/products", async (_req, res) => {
   }
   res.status(status).send({ success: status === 200, error });
 });
+
+app.use("/api", apiRouteNotFound);
+app.use("/api", errorHandler);
 
 app.use(shopify.cspHeaders());
 app.use(serveStatic(STATIC_PATH, { index: false }));
