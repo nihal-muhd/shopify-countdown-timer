@@ -6,10 +6,8 @@ import serveStatic from "serve-static";
 import { connectToDatabase } from "./db.js";
 import shopify from "./shopify.js";
 import timersRouter from "./routes/timers.routes.js";
-import {
-  apiRouteNotFound,
-  errorHandler,
-} from "./middleware/errorHandler.js";
+import proxyRouter from "./routes/proxy.routes.js";
+import { routeNotFound, errorHandler } from "./middleware/errorHandler.js";
 import productCreator from "./product-creator.js";
 import PrivacyWebhookHandlers from "./privacy.js";
 
@@ -35,6 +33,10 @@ app.post(
   shopify.config.webhooks.path,
   shopify.processWebhooks({ webhookHandlers: PrivacyWebhookHandlers })
 );
+
+app.use("/proxy", proxyRouter);
+app.use("/proxy", routeNotFound);
+app.use("/proxy", errorHandler);
 
 app.use("/api/*", shopify.validateAuthenticatedSession());
 
@@ -72,7 +74,7 @@ app.post("/api/products", async (_req, res) => {
   res.status(status).send({ success: status === 200, error });
 });
 
-app.use("/api", apiRouteNotFound);
+app.use("/api", routeNotFound);
 app.use("/api", errorHandler);
 
 app.use(shopify.cspHeaders());

@@ -40,7 +40,7 @@ function toHttpError(error) {
   return new HttpError(500, "Something went wrong");
 }
 
-export function apiRouteNotFound(req, res) {
+export function routeNotFound(req, res) {
   res.status(404).json({ error: "Route not found" });
 }
 
