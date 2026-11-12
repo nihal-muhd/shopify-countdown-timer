@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import { getEvergreenEndTime } from "./evergreen.js";
 
 const SECOND_MS = 1000;
@@ -11,6 +11,12 @@ function resolveEndTime(timer, now) {
     return getEvergreenEndTime(timer.id, timer.durationMinutes, now);
   }
   return new Date(timer.endAt).getTime();
+}
+
+function startCountdown(timer) {
+  const now = Date.now();
+  const endTime = resolveEndTime(timer, now);
+  return { endTime, remainingMs: endTime - now };
 }
 
 function padTwoDigits(value) {
@@ -33,26 +39,25 @@ function isUrgent(remainingMs, urgencyMinutes) {
 }
 
 export function Countdown({ timer, onFinished }) {
-  const endTimeRef = useRef(resolveEndTime(timer, Date.now()));
-  const [remainingMs, setRemainingMs] = useState(
-    () => endTimeRef.current - Date.now()
-  );
+  const [countdown, setCountdown] = useState(() => startCountdown(timer));
+  const { endTime: currentEndTime, remainingMs } = countdown;
 
   useEffect(() => {
+    let endTime = currentEndTime;
     const intervalId = setInterval(() => {
       try {
         const now = Date.now();
-        if (timer.type === "evergreen" && now >= endTimeRef.current) {
-          endTimeRef.current = resolveEndTime(timer, now);
+        if (timer.type === "evergreen" && now >= endTime) {
+          endTime = resolveEndTime(timer, now);
         }
-        setRemainingMs(endTimeRef.current - now);
+        setCountdown({ endTime, remainingMs: endTime - now });
       } catch {
         clearInterval(intervalId);
         onFinished();
       }
     }, SECOND_MS);
     return () => clearInterval(intervalId);
-  }, [timer, onFinished]);
+  }, [timer, currentEndTime, onFinished]);
 
   useEffect(() => {
     if (remainingMs <= 0 && timer.type === "fixed") {
@@ -64,7 +69,8 @@ export function Countdown({ timer, onFinished }) {
     return null;
   }
 
-  const { headline, position, bgColor, textColor, urgencyMinutes } = timer.style;
+  const { headline, position, bgColor, textColor, urgencyMinutes } =
+    timer.style;
   const headlineElement = <p class="countdown-timer__headline">{headline}</p>;
   const className = isUrgent(remainingMs, urgencyMinutes)
     ? "countdown-timer countdown-timer--urgent"
@@ -81,7 +87,9 @@ export function Countdown({ timer, onFinished }) {
       <div class="countdown-timer__digits">
         {toTimeUnits(remainingMs).map((unit) => (
           <span class="countdown-timer__unit" key={unit.label}>
-            <span class="countdown-timer__value">{padTwoDigits(unit.value)}</span>
+            <span class="countdown-timer__value">
+              {padTwoDigits(unit.value)}
+            </span>
             <span class="countdown-timer__label">{unit.label}</span>
           </span>
         ))}

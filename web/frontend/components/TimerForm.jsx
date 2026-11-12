@@ -16,7 +16,12 @@ import { TargetPicker } from "./TargetPicker";
 
 const HEX_COLOR_PATTERN = /^#[0-9a-fA-F]{6}$/;
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
-const LIMITS = { title: 100, headline: 80, maxDurationMinutes: 43200, maxUrgencyMinutes: 10080 };
+const LIMITS = {
+  title: 100,
+  headline: 80,
+  maxDurationMinutes: 43200,
+  maxUrgencyMinutes: 10080,
+};
 
 const TYPE_CHOICES = [
   {
@@ -70,7 +75,12 @@ function toFormValues(timer) {
 
 function isWholeNumberInRange(value, min, max) {
   const number = Number(value);
-  return value.trim() !== "" && Number.isInteger(number) && number >= min && number <= max;
+  return (
+    value.trim() !== "" &&
+    Number.isInteger(number) &&
+    number >= min &&
+    number <= max
+  );
 }
 
 function validate(values) {
@@ -95,7 +105,9 @@ function validate(values) {
     } else if (endTime <= startTime) {
       errors.endAt = "End date must be after start date";
     }
-  } else if (!isWholeNumberInRange(values.durationMinutes, 1, LIMITS.maxDurationMinutes)) {
+  } else if (
+    !isWholeNumberInRange(values.durationMinutes, 1, LIMITS.maxDurationMinutes)
+  ) {
     errors.durationMinutes = `Enter whole minutes between 1 and ${LIMITS.maxDurationMinutes}`;
   }
 
@@ -115,10 +127,14 @@ function validate(values) {
   if (!headline) {
     errors["style.headline"] = "Headline is required";
   } else if (headline.length > LIMITS.headline) {
-    errors["style.headline"] = `Headline must be at most ${LIMITS.headline} characters`;
+    errors["style.headline"] =
+      `Headline must be at most ${LIMITS.headline} characters`;
   }
-  if (!isWholeNumberInRange(values.urgencyMinutes, 0, LIMITS.maxUrgencyMinutes)) {
-    errors["style.urgencyMinutes"] = `Enter whole minutes between 0 and ${LIMITS.maxUrgencyMinutes}`;
+  if (
+    !isWholeNumberInRange(values.urgencyMinutes, 0, LIMITS.maxUrgencyMinutes)
+  ) {
+    errors["style.urgencyMinutes"] =
+      `Enter whole minutes between 0 and ${LIMITS.maxUrgencyMinutes}`;
   }
 
   return errors;
@@ -129,9 +145,14 @@ function toRequestBody(values) {
     title: values.title.trim(),
     isEnabled: values.isEnabled,
     targetType: values.targetType,
-    productIds: values.targetType === "products" ? values.products.map((item) => item.id) : [],
+    productIds:
+      values.targetType === "products"
+        ? values.products.map((item) => item.id)
+        : [],
     collectionIds:
-      values.targetType === "collections" ? values.collections.map((item) => item.id) : [],
+      values.targetType === "collections"
+        ? values.collections.map((item) => item.id)
+        : [],
     style: {
       bgColor: values.bgColor,
       textColor: values.textColor,
@@ -149,11 +170,17 @@ function toRequestBody(values) {
       endAt: new Date(values.endAt).toISOString(),
     };
   }
-  return { ...sharedFields, type: "evergreen", durationMinutes: Number(values.durationMinutes) };
+  return {
+    ...sharedFields,
+    type: "evergreen",
+    durationMinutes: Number(values.durationMinutes),
+  };
 }
 
 function toFieldErrors(details = []) {
-  return Object.fromEntries(details.map((detail) => [detail.field, detail.message]));
+  return Object.fromEntries(
+    details.map((detail) => [detail.field, detail.message]),
+  );
 }
 
 function ColorField({ label, value, error, onChange }) {
@@ -172,7 +199,13 @@ function ColorField({ label, value, error, onChange }) {
           aria-label={`${label} picker`}
           value={swatchValue}
           onChange={(event) => onChange(event.target.value.toUpperCase())}
-          style={{ width: 44, height: 36, padding: 2, border: "none", background: "none" }}
+          style={{
+            width: 44,
+            height: 36,
+            padding: 2,
+            border: "none",
+            background: "none",
+          }}
         />
       }
     />
@@ -184,8 +217,12 @@ function TimerPreview({ values }) {
   return (
     <div
       style={{
-        background: HEX_COLOR_PATTERN.test(values.bgColor) ? values.bgColor : "#111827",
-        color: HEX_COLOR_PATTERN.test(values.textColor) ? values.textColor : "#FFFFFF",
+        background: HEX_COLOR_PATTERN.test(values.bgColor)
+          ? values.bgColor
+          : "#111827",
+        color: HEX_COLOR_PATTERN.test(values.textColor)
+          ? values.textColor
+          : "#FFFFFF",
         borderRadius: 8,
         padding: "12px 16px",
         textAlign: "center",
@@ -194,12 +231,21 @@ function TimerPreview({ values }) {
       <div
         style={{
           display: "flex",
-          flexDirection: values.position === "bottom" ? "column-reverse" : "column",
+          flexDirection:
+            values.position === "bottom" ? "column-reverse" : "column",
           gap: 4,
         }}
       >
-        <div style={{ fontSize: 14, fontWeight: 600 }}>{values.headline.trim() || "Headline"}</div>
-        <div style={{ fontSize: 24, fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>
+        <div style={{ fontSize: 14, fontWeight: 600 }}>
+          {values.headline.trim() || "Headline"}
+        </div>
+        <div
+          style={{
+            fontSize: 24,
+            fontWeight: 700,
+            fontVariantNumeric: "tabular-nums",
+          }}
+        >
           {isEvergreen ? "00 : 29 : 59" : "02 : 14 : 37 : 59"}
         </div>
       </div>
@@ -207,7 +253,13 @@ function TimerPreview({ values }) {
   );
 }
 
-export function TimerForm({ timer, submitLabel, isSaving, onSubmit, onCancel }) {
+export function TimerForm({
+  timer,
+  submitLabel,
+  isSaving,
+  onSubmit,
+  onCancel,
+}) {
   const shopify = useAppBridge();
   const [values, setValues] = useState(() => toFormValues(timer));
   const [errors, setErrors] = useState({});
@@ -215,26 +267,41 @@ export function TimerForm({ timer, submitLabel, isSaving, onSubmit, onCancel }) 
   function updateField(field) {
     return (nextValue) => {
       setValues((current) => ({ ...current, [field]: nextValue }));
-      setErrors((current) => ({ ...current, [field]: undefined, [`style.${field}`]: undefined }));
+      setErrors((current) => ({
+        ...current,
+        [field]: undefined,
+        [`style.${field}`]: undefined,
+      }));
     };
   }
 
   function updateTargetType(nextTargetType) {
     setValues((current) => ({ ...current, targetType: nextTargetType }));
-    setErrors((current) => ({ ...current, productIds: undefined, collectionIds: undefined }));
+    setErrors((current) => ({
+      ...current,
+      productIds: undefined,
+      collectionIds: undefined,
+    }));
   }
 
   function updateSelectedItems(nextItems) {
-    const listField = values.targetType === "products" ? "products" : "collections";
+    const listField =
+      values.targetType === "products" ? "products" : "collections";
     setValues((current) => ({ ...current, [listField]: nextItems }));
-    setErrors((current) => ({ ...current, productIds: undefined, collectionIds: undefined }));
+    setErrors((current) => ({
+      ...current,
+      productIds: undefined,
+      collectionIds: undefined,
+    }));
   }
 
   async function handleSubmit() {
     const clientErrors = validate(values);
     setErrors(clientErrors);
     if (Object.keys(clientErrors).length > 0) {
-      shopify.toast.show("Please fix the highlighted fields", { isError: true });
+      shopify.toast.show("Please fix the highlighted fields", {
+        isError: true,
+      });
       return;
     }
 
@@ -246,7 +313,8 @@ export function TimerForm({ timer, submitLabel, isSaving, onSubmit, onCancel }) 
     }
   }
 
-  const selectedItems = values.targetType === "collections" ? values.collections : values.products;
+  const selectedItems =
+    values.targetType === "collections" ? values.collections : values.products;
   const targetError = errors.productIds || errors.collectionIds;
 
   return (
@@ -385,8 +453,14 @@ export function TimerForm({ timer, submitLabel, isSaving, onSubmit, onCancel }) 
 
       <Layout.Section>
         <PageActions
-          primaryAction={{ content: submitLabel, loading: isSaving, onAction: handleSubmit }}
-          secondaryActions={[{ content: "Cancel", disabled: isSaving, onAction: onCancel }]}
+          primaryAction={{
+            content: submitLabel,
+            loading: isSaving,
+            onAction: handleSubmit,
+          }}
+          secondaryActions={[
+            { content: "Cancel", disabled: isSaving, onAction: onCancel },
+          ]}
         />
       </Layout.Section>
     </Layout>

@@ -26,7 +26,7 @@ const shopify = shopifyApp({
   },
   sessionStorage: new MongoDBSessionStorage(
     multiHostSafeMongoUri,
-    MONGODB_DB_NAME
+    MONGODB_DB_NAME,
   ),
 });
 

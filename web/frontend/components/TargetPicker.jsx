@@ -1,4 +1,11 @@
-import { Button, ChoiceList, InlineError, Stack, Tag, Text } from "@shopify/polaris";
+import {
+  Button,
+  ChoiceList,
+  InlineError,
+  Stack,
+  Tag,
+  Text,
+} from "@shopify/polaris";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { RESOURCE_TYPES, toGid, toNumericId } from "../utils/shopifyIds";
 
@@ -59,7 +66,7 @@ export function TargetPicker({
       selection.map((resource) => ({
         id: toNumericId(resource.id),
         title: resource.title,
-      }))
+      })),
     );
   }
 

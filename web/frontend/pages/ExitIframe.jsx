@@ -1,31 +1,32 @@
 import { useAppBridge } from "@shopify/app-bridge-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Banner, Layout, Page } from "@shopify/polaris";
 
-export default function ExitIframe() {
-  const app = useAppBridge();
-  const { search } = useLocation();
-  const [showWarning, setShowWarning] = useState(false);
+function toAllowedRedirectUrl(search) {
+  const redirectUri = new URLSearchParams(search).get("redirectUri");
+  if (!redirectUri) {
+    return null;
+  }
+  const url = new URL(decodeURIComponent(redirectUri));
+  const isShopifyOrThisApp =
+    [window.location.hostname, "admin.shopify.com"].includes(url.hostname) ||
+    url.hostname.endsWith(".myshopify.com");
+  return isShopifyOrThisApp ? url.toString() : null;
+}
 
-  app.loading(true);
+export default function ExitIframe() {
+  const shopify = useAppBridge();
+  const { search } = useLocation();
+  const allowedRedirectUrl = search ? toAllowedRedirectUrl(search) : null;
+  const showWarning = Boolean(search) && !allowedRedirectUrl;
 
   useEffect(() => {
-    if (!!app && !!search) {
-      const params = new URLSearchParams(search);
-      const redirectUri = params.get("redirectUri");
-      const url = new URL(decodeURIComponent(redirectUri));
-
-      if (
-        [location.hostname, "admin.shopify.com"].includes(url.hostname) ||
-        url.hostname.endsWith(".myshopify.com")
-      ) {
-        window.open(url, "_top");
-      } else {
-        setShowWarning(true);
-      }
+    shopify.loading(true);
+    if (allowedRedirectUrl) {
+      window.open(allowedRedirectUrl, "_top");
     }
-  }, [app, search, setShowWarning]);
+  }, [shopify, allowedRedirectUrl]);
 
   return showWarning ? (
     <Page narrowWidth>

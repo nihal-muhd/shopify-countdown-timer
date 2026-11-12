@@ -13,12 +13,12 @@ proxyRouter.use(verifyAppProxy);
 proxyRouter.get(
   "/timer",
   timerLookupLimiter,
-  catchAsyncErrors(proxyController.getTimerForProduct)
+  catchAsyncErrors(proxyController.getTimerForProduct),
 );
 proxyRouter.post(
   "/impression/:id",
   impressionLimiter,
-  catchAsyncErrors(proxyController.recordImpression)
+  catchAsyncErrors(proxyController.recordImpression),
 );
 
 export default proxyRouter;

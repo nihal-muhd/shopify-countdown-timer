@@ -4,7 +4,7 @@ import { gzipSync } from "zlib";
 import * as esbuild from "esbuild";
 
 const outputFile = fileURLToPath(
-  new URL("../extensions/countdown-timer/assets/countdown.js", import.meta.url)
+  new URL("../extensions/countdown-timer/assets/countdown.js", import.meta.url),
 );
 
 const buildOptions = {
@@ -25,7 +25,7 @@ function reportBundleSize() {
   const bundle = readFileSync(outputFile);
   const toKilobytes = (bytes) => (bytes / 1024).toFixed(2);
   console.log(
-    `countdown.js: ${toKilobytes(bundle.length)} KB minified, ${toKilobytes(gzipSync(bundle).length)} KB gzipped`
+    `countdown.js: ${toKilobytes(bundle.length)} KB minified, ${toKilobytes(gzipSync(bundle).length)} KB gzipped`,
   );
 }
 

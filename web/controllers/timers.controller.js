@@ -28,7 +28,10 @@ export async function listTimers(req, res) {
 }
 
 export async function getTimer(req, res) {
-  const timer = await timersService.getTimer(getSessionShop(res), req.params.id);
+  const timer = await timersService.getTimer(
+    getSessionShop(res),
+    req.params.id,
+  );
   if (!timer) {
     throw timerNotFound();
   }
@@ -38,7 +41,7 @@ export async function getTimer(req, res) {
 export async function createTimer(req, res) {
   const timer = await timersService.createTimer(
     getSessionShop(res),
-    req.validatedBody
+    req.validatedBody,
   );
   res.status(201).json({ timer: toTimerResponse(timer) });
 }
@@ -47,7 +50,7 @@ export async function updateTimer(req, res) {
   const timer = await timersService.updateTimer(
     getSessionShop(res),
     req.params.id,
-    req.validatedBody
+    req.validatedBody,
   );
   if (!timer) {
     throw timerNotFound();
@@ -58,7 +61,7 @@ export async function updateTimer(req, res) {
 export async function deleteTimer(req, res) {
   const wasDeleted = await timersService.deleteTimer(
     getSessionShop(res),
-    req.params.id
+    req.params.id,
   );
   if (!wasDeleted) {
     throw timerNotFound();

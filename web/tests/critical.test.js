@@ -39,9 +39,18 @@ describe("critical business logic", () => {
 
   it("2. a timer only targets its listed products or collections", () => {
     const gardenProduct = { productId: 111, collectionIds: ["900"] };
-    const productTimer = fixedTimer({ targetType: "products", productIds: ["111"] });
-    const gardenTimer = fixedTimer({ targetType: "collections", collectionIds: ["900"] });
-    const otherCollectionTimer = fixedTimer({ targetType: "collections", collectionIds: ["999"] });
+    const productTimer = fixedTimer({
+      targetType: "products",
+      productIds: ["111"],
+    });
+    const gardenTimer = fixedTimer({
+      targetType: "collections",
+      collectionIds: ["900"],
+    });
+    const otherCollectionTimer = fixedTimer({
+      targetType: "collections",
+      collectionIds: ["999"],
+    });
 
     expect(matchesTarget(productTimer, gardenProduct)).toBe(true);
     expect(matchesTarget(gardenTimer, gardenProduct)).toBe(true);
@@ -51,11 +60,23 @@ describe("critical business logic", () => {
   it("3. the most specific timer wins: product, then collection, then all products", () => {
     const product = { productId: "111", collectionIds: ["900"] };
     const storeWide = fixedTimer({ title: "store-wide" });
-    const garden = fixedTimer({ title: "garden", targetType: "collections", collectionIds: ["900"] });
-    const thisProduct = fixedTimer({ title: "this-product", targetType: "products", productIds: ["111"] });
+    const garden = fixedTimer({
+      title: "garden",
+      targetType: "collections",
+      collectionIds: ["900"],
+    });
+    const thisProduct = fixedTimer({
+      title: "this-product",
+      targetType: "products",
+      productIds: ["111"],
+    });
 
-    expect(pickTimerForProduct([storeWide, garden, thisProduct], product, NOW).title).toBe("this-product");
-    expect(pickTimerForProduct([storeWide, garden], product, NOW).title).toBe("garden");
+    expect(
+      pickTimerForProduct([storeWide, garden, thisProduct], product, NOW).title,
+    ).toBe("this-product");
+    expect(pickTimerForProduct([storeWide, garden], product, NOW).title).toBe(
+      "garden",
+    );
   });
 
   it("4. an evergreen timer continues for a returning visitor and resets after it ends", () => {
@@ -63,11 +84,19 @@ describe("critical business logic", () => {
     const tenMinutesLater = firstSeenAt + 10 * ONE_MINUTE_MS;
     const thirtyOneMinutesLater = firstSeenAt + 31 * ONE_MINUTE_MS;
 
-    const returning = getEvergreenRemaining(String(firstSeenAt), 30, tenMinutesLater);
+    const returning = getEvergreenRemaining(
+      String(firstSeenAt),
+      30,
+      tenMinutesLater,
+    );
     expect(returning.remainingMs).toBe(20 * ONE_MINUTE_MS);
     expect(returning.hasReset).toBe(false);
 
-    const afterExpiry = getEvergreenRemaining(String(firstSeenAt), 30, thirtyOneMinutesLater);
+    const afterExpiry = getEvergreenRemaining(
+      String(firstSeenAt),
+      30,
+      thirtyOneMinutesLater,
+    );
     expect(afterExpiry.remainingMs).toBe(30 * ONE_MINUTE_MS);
     expect(afterExpiry.hasReset).toBe(true);
   });
@@ -107,9 +136,17 @@ describe("critical business logic", () => {
       .map(([key, value]) => `${key}=${value}`)
       .sort()
       .join("");
-    const signature = createHmac("sha256", secret).update(signedMessage).digest("hex");
-    const genuineQuery = new URLSearchParams({ ...params, signature }).toString();
-    const tamperedQuery = genuineQuery.replace("product_id=111", "product_id=999");
+    const signature = createHmac("sha256", secret)
+      .update(signedMessage)
+      .digest("hex");
+    const genuineQuery = new URLSearchParams({
+      ...params,
+      signature,
+    }).toString();
+    const tamperedQuery = genuineQuery.replace(
+      "product_id=111",
+      "product_id=999",
+    );
     const options = { now: NOW.getTime() };
 
     expect(verifyProxySignature(genuineQuery, secret, options)).toBe(true);

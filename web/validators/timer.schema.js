@@ -20,13 +20,18 @@ function sanitizedText(maxLength, fieldLabel) {
       z
         .string()
         .min(1, `${fieldLabel} is required`)
-        .max(maxLength, `${fieldLabel} must be at most ${maxLength} characters`)
+        .max(
+          maxLength,
+          `${fieldLabel} must be at most ${maxLength} characters`,
+        ),
     );
 }
 
 const shopifyId = z
   .union([z.string(), z.number().int().positive()])
-  .transform((value) => String(value).trim().replace(SHOPIFY_GID_PREFIX_PATTERN, ""))
+  .transform((value) =>
+    String(value).trim().replace(SHOPIFY_GID_PREFIX_PATTERN, ""),
+  )
   .pipe(z.string().regex(/^\d+$/, "Must be a numeric Shopify id or gid"));
 
 const shopifyIdList = z
@@ -35,7 +40,9 @@ const shopifyIdList = z
   .transform((ids) => [...new Set(ids)])
   .default([]);
 
-const hexColor = z.string().regex(HEX_COLOR_PATTERN, "Must be a hex color like #FF0000");
+const hexColor = z
+  .string()
+  .regex(HEX_COLOR_PATTERN, "Must be a hex color like #FF0000");
 
 const isoDateTime = z.iso
   .datetime({ offset: true, error: "Must be an ISO 8601 date-time" })
@@ -47,7 +54,7 @@ const styleSchema = z
     textColor: hexColor.default("#FFFFFF"),
     position: z.enum(["top", "bottom"]).default("top"),
     headline: sanitizedText(TIMER_LIMITS.headlineMaxLength, "Headline").default(
-      "Hurry! Sale ends in"
+      "Hurry! Sale ends in",
     ),
     urgencyMinutes: z
       .number()
@@ -116,7 +123,8 @@ function toStoredTimerFields(timer) {
     endAt: isFixed ? timer.endAt : undefined,
     durationMinutes: isFixed ? undefined : timer.durationMinutes,
     productIds: timer.targetType === "products" ? timer.productIds : [],
-    collectionIds: timer.targetType === "collections" ? timer.collectionIds : [],
+    collectionIds:
+      timer.targetType === "collections" ? timer.collectionIds : [],
   };
 }
 

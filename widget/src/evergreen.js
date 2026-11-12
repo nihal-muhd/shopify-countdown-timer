@@ -20,11 +20,15 @@ function saveFirstSeenAt(timerId, startedAt) {
   }
 }
 
-export function getEvergreenEndTime(timerId, durationMinutes, now = Date.now()) {
+export function getEvergreenEndTime(
+  timerId,
+  durationMinutes,
+  now = Date.now(),
+) {
   const { startedAt, endsAt, hasReset } = getEvergreenRemaining(
     readFirstSeenAt(timerId),
     durationMinutes,
-    now
+    now,
   );
   if (hasReset) {
     saveFirstSeenAt(timerId, startedAt);

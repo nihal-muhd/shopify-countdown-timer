@@ -66,7 +66,12 @@ export function TimerTable({ timers, onEdit, onDelete }) {
           <Button size="slim" onClick={() => onEdit(timer.id)}>
             Edit
           </Button>
-          <Button size="slim" destructive outline onClick={() => onDelete(timer)}>
+          <Button
+            size="slim"
+            destructive
+            outline
+            onClick={() => onDelete(timer)}
+          >
             Delete
           </Button>
         </ButtonGroup>

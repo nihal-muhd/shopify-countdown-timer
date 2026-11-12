@@ -35,7 +35,7 @@ const styleSchema = new mongoose.Schema(
     },
     urgencyMinutes: { type: Number, min: 0, default: 60 },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const timerSchema = new mongoose.Schema(
@@ -66,7 +66,7 @@ const timerSchema = new mongoose.Schema(
     isEnabled: { type: Boolean, default: true },
     impressions: { type: Number, default: 0, min: 0 },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 timerSchema.index({ shop: 1, isEnabled: 1 });

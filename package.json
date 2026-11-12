@@ -1,6 +1,7 @@
 {
   "name": "countdown-timer",
   "version": "1.0.0",
+  "type": "module",
   "main": "web/index.js",
   "license": "UNLICENSED",
   "scripts": {
@@ -11,10 +12,23 @@
     "generate": "shopify app generate",
     "deploy": "shopify app deploy",
     "test": "npm test --workspace shopify-app-template-node",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "build:widget": "npm run build --workspace countdown-widget",
     "watch:widget": "npm run watch --workspace countdown-widget"
   },
   "dependencies": {},
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "eslint": "9.39.5",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-react": "7.37.5",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "globals": "17.13.0",
+    "prettier": "3.9.10"
+  },
   "author": "NIHAL MUHAMMED",
   "private": true,
   "workspaces": [

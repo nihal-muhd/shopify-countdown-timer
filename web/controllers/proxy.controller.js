@@ -20,13 +20,16 @@ function readProductFromQuery(query) {
   const isValid =
     NUMERIC_ID_PATTERN.test(productId) &&
     collectionIds.length <= MAX_COLLECTION_IDS &&
-    collectionIds.every((collectionId) => NUMERIC_ID_PATTERN.test(collectionId));
+    collectionIds.every((collectionId) =>
+      NUMERIC_ID_PATTERN.test(collectionId),
+    );
 
   return isValid ? { productId, collectionIds } : null;
 }
 
 function toStorefrontTimer(timer) {
-  const { bgColor, textColor, position, headline, urgencyMinutes } = timer.style;
+  const { bgColor, textColor, position, headline, urgencyMinutes } =
+    timer.style;
   const displayFields = {
     id: String(timer._id),
     type: timer.type,
@@ -44,12 +47,12 @@ export async function getTimerForProduct(req, res) {
   if (!product) {
     throw new HttpError(
       400,
-      "product_id must be a numeric id and collection_ids a comma-separated list of numeric ids"
+      "product_id must be a numeric id and collection_ids a comma-separated list of numeric ids",
     );
   }
 
   const timers = await timersService.listEnabledTimersForStorefront(
-    res.locals.proxyShop
+    res.locals.proxyShop,
   );
   const timer = pickTimerForProduct(timers, product);
 
@@ -64,7 +67,7 @@ export async function recordImpression(req, res) {
   res.set("Cache-Control", "no-store");
   const wasCounted = await timersService.incrementImpressions(
     res.locals.proxyShop,
-    req.params.id
+    req.params.id,
   );
   if (!wasCounted) {
     throw new HttpError(404, "Timer not found");

@@ -10,7 +10,7 @@ if (existsSync(envFilePath)) {
 
 if (!process.env.MONGODB_URI) {
   throw new Error(
-    "MONGODB_URI is missing. Add it to the .env file in the app root."
+    "MONGODB_URI is missing. Add it to the .env file in the app root.",
   );
 }
 

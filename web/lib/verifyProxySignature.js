@@ -43,7 +43,7 @@ function isRecent(timestampSeconds, now, maxAgeSeconds) {
 export function verifyProxySignature(
   queryString,
   apiSecret,
-  { now = Date.now(), maxAgeSeconds = DEFAULT_MAX_AGE_SECONDS } = {}
+  { now = Date.now(), maxAgeSeconds = DEFAULT_MAX_AGE_SECONDS } = {},
 ) {
   if (!apiSecret) {
     return false;

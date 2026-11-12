@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   QueryClient,
   QueryClientProvider,
@@ -5,15 +6,14 @@ import {
   MutationCache,
 } from "react-query";
 
-/**
- * Sets up the QueryClientProvider from react-query.
- * @desc See: https://react-query.tanstack.com/reference/QueryClientProvider#_top
- */
 export function QueryProvider({ children }) {
-  const client = new QueryClient({
-    queryCache: new QueryCache(),
-    mutationCache: new MutationCache(),
-  });
+  const [client] = useState(
+    () =>
+      new QueryClient({
+        queryCache: new QueryCache(),
+        mutationCache: new MutationCache(),
+      }),
+  );
 
   return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 }

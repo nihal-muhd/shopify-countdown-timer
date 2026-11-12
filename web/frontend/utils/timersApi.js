@@ -26,7 +26,7 @@ async function requestJson(path, { method = "GET", body } = {}) {
     throw new ApiError(
       responseBody.error || `Request failed with status ${response.status}`,
       response.status,
-      responseBody.details ?? []
+      responseBody.details ?? [],
     );
   }
   return responseBody;
@@ -36,7 +36,7 @@ export function useTimers() {
   return useQuery(
     TIMERS_QUERY_KEY,
     async () => (await requestJson("/api/timers")).timers,
-    { refetchOnWindowFocus: false }
+    { refetchOnWindowFocus: false },
   );
 }
 
@@ -44,7 +44,7 @@ export function useTimer(timerId) {
   return useQuery(
     [TIMERS_QUERY_KEY, timerId],
     async () => (await requestJson(`/api/timers/${timerId}`)).timer,
-    { enabled: Boolean(timerId), refetchOnWindowFocus: false, retry: false }
+    { enabled: Boolean(timerId), refetchOnWindowFocus: false, retry: false },
   );
 }
 
@@ -56,7 +56,7 @@ export function useSaveTimer(timerId) {
       const method = timerId ? "PUT" : "POST";
       return (await requestJson(path, { method, body: timerInput })).timer;
     },
-    { onSuccess: () => queryClient.invalidateQueries(TIMERS_QUERY_KEY) }
+    { onSuccess: () => queryClient.invalidateQueries(TIMERS_QUERY_KEY) },
   );
 }
 
@@ -64,6 +64,6 @@ export function useDeleteTimer() {
   const queryClient = useQueryClient();
   return useMutation(
     (timerId) => requestJson(`/api/timers/${timerId}`, { method: "DELETE" }),
-    { onSuccess: () => queryClient.invalidateQueries(TIMERS_QUERY_KEY) }
+    { onSuccess: () => queryClient.invalidateQueries(TIMERS_QUERY_KEY) },
   );
 }

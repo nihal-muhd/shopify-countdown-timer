@@ -66,7 +66,7 @@ export function matchesTarget(timer, product) {
       return toIdList(timer.productIds).includes(productId);
     case "collections":
       return toIdList(timer.collectionIds).some((collectionId) =>
-        productCollectionIds.includes(collectionId)
+        productCollectionIds.includes(collectionId),
       );
     default:
       return false;
@@ -103,7 +103,7 @@ export function pickTimerForProduct(timers, product, now = new Date()) {
   const candidates = timers.filter(
     (timer) =>
       getTimerStatus(timer, now) === TIMER_STATUS.ACTIVE &&
-      matchesTarget(timer, product)
+      matchesTarget(timer, product),
   );
 
   if (candidates.length === 0) {
@@ -116,7 +116,7 @@ export function pickTimerForProduct(timers, product, now = new Date()) {
 export function getEvergreenRemaining(
   firstSeenAt,
   durationMinutes,
-  now = Date.now()
+  now = Date.now(),
 ) {
   const currentTime = toTimestamp(now);
   const durationMs = durationMinutes * MILLISECONDS_PER_MINUTE;

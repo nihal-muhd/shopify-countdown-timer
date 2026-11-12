@@ -45,7 +45,7 @@ export async function incrementImpressions(shop, timerId) {
   }
   const result = await Timer.updateOne(
     { _id: timerId, shop, isEnabled: true },
-    { $inc: { impressions: 1 } }
+    { $inc: { impressions: 1 } },
   );
   return result.matchedCount > 0;
 }

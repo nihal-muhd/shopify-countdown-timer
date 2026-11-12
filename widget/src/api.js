@@ -35,7 +35,7 @@ export async function fetchTimer({ proxyBase, productId, collectionIds }) {
 
   const response = await fetch(
     buildTimerUrl(proxyBase, productId, collectionIds),
-    { headers: { Accept: "application/json" } }
+    { headers: { Accept: "application/json" } },
   );
 
   let timer = null;

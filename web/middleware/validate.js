@@ -12,7 +12,11 @@ export function validateBody(schema) {
     const result = schema.safeParse(req.body ?? {});
     if (!result.success) {
       return next(
-        new HttpError(400, "Validation failed", toFieldDetails(result.error.issues))
+        new HttpError(
+          400,
+          "Validation failed",
+          toFieldDetails(result.error.issues),
+        ),
       );
     }
     req.validatedBody = result.data;

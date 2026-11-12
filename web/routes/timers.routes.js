@@ -11,12 +11,12 @@ timersRouter.get("/:id", catchAsyncErrors(timersController.getTimer));
 timersRouter.post(
   "/",
   validateBody(timerInputSchema),
-  catchAsyncErrors(timersController.createTimer)
+  catchAsyncErrors(timersController.createTimer),
 );
 timersRouter.put(
   "/:id",
   validateBody(timerInputSchema),
-  catchAsyncErrors(timersController.updateTimer)
+  catchAsyncErrors(timersController.updateTimer),
 );
 timersRouter.delete("/:id", catchAsyncErrors(timersController.deleteTimer));
 
