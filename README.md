@@ -8,11 +8,6 @@ A Shopify app that lets merchants create countdown timers for promotions and sho
 - **Customization**: colors, headline, position, urgency threshold
 - **Analytics**: impression count per timer
 
-## Explanation Videos
-
-1. **Intro and application overview**: https://www.loom.com/share/0e6037e026564228a4faa2499d6cbdf0
-2. **Architecture and code walkthrough**: https://www.loom.com/share/c18a65087d7742a099f952d985f83d10
-3. **Test cases, trade-offs and improvements**: https://www.loom.com/share/c2d60c5d79fe44f7b2e56399472b978b
 
 ## Tech Stack
 
